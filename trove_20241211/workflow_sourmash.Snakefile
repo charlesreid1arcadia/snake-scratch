@@ -9,13 +9,24 @@ import os
 def get_filename(filepath):
     return os.path.basename(filepath)
 
+# Function to get full path from basename
+def get_full_path(filename):
+    groups = config['input_file_groups']
+    for g in groups:
+        for group_name in g.keys():
+            group_elements = g[group_name]
+            for group_element in group_elements:
+                if filename == get_filename(group_element):
+                    return group_element, group_name
+    return None, None
+
 
 ############## Rules ################
 
 # Default target rule
 rule all:
     input:
-        [f"sourmash_k{k}/{gkey}.zip" for g in config['input_file_groups'] for gkey in g.keys() for k in config['sourmash_ks']]
+        [f"sourmash/k{k}/{gkey}.zip" for g in config['input_file_groups'] for gkey in g.keys() for k in config['sourmash_ks']]
 
 
 # Rule to download files from S3
@@ -24,10 +35,10 @@ rule download_from_s3:
         "downloads/{filename}"
     params:
         bucket=config['s3_bucket'],
-        # This lambda turns the shortened filename back into the full path
-        full_path=lambda wildcards:  [g[gkey] for g in config['input_file_groups'] for gkey in g.keys() if wildcards.filename in g[gkey]]
+        full_path=lambda wildcards: get_full_path(wildcards.filename)[0]
     shell:
         """
+        echo {params.full_path}
         echo aws s3 cp s3://{params.bucket}/{params.full_path} {output}
         touch {output}
         """

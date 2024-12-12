@@ -1,5 +1,5 @@
-# S3 bucket name
-s3_bucket: "s3://czb-tabula-sapiens"
+# S3 bucket name (no leading s3://)
+s3_bucket: "czb-tabula-sapiens"
 
 # List of input files to download from the bucket,
 # grouped by name (used to name the sourmash outputs)
