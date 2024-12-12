@@ -9,4 +9,7 @@ input_file_groups:
     - "TabulaSapiens_v2/TSP12/fastqs/10X/TSP12_Heart_Atria_10X_1_1/TSP12_Heart_Atria_10X_1_1_S13_L003_R2_001.fastq.gz"
 
 # Sourmash parameter k
-sourmash_k: 31
+sourmash_ks:
+  - 21
+  - 31
+  - 51
