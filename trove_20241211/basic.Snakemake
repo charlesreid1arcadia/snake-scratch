@@ -1,0 +1,3 @@
+rule stupid:
+    run:
+        print("Hello world.")
