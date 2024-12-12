@@ -2,8 +2,8 @@
 
 import os
 
-# Configuration parameters (to be set when running the workflow)
-configfile: "config_tabulasapiens.yaml"
+# Configuration parameters
+#configfile: "config_tabulasapiens.yaml"
 
 # Function to extract basename from full path
 def get_filename(filepath):
@@ -13,7 +13,7 @@ def get_filename(filepath):
 # Default target rule
 rule all:
     input:
-        # # Use this input to download the files to downloads/
+        # # Use this input to download the files to downloads/ only
         # [f"downloads/{get_filename(f)}" for f in config['input_files']]
         # Use this input to process the files in sourmash_k{k}/
         [f"results/{get_filename(f)}.zip" for f in config['input_files']]
@@ -49,7 +49,7 @@ rule process_file:
         # Fake rule
         """
         echo sourmash -k={params.sourmash_k} {input} -o {output}
-	touch {output}
+        touch {output}
         """
 
 
