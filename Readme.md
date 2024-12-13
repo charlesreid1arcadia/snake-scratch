@@ -192,7 +192,7 @@ snakemake --configfile config_tabulasapiens.yaml -s workflow_sourmash.Snakefile 
 Tasks still outstanding:
 
 * Plan which files should be downloaded (multiple rounds: preliminary, full)
-* Copy signatures to a designatured signatures bucket/folder
+* Copy signatures to a designated signatures bucket/folder
 * Clean up downloaded files
 * Re-run timing of different steps using local `/tmp` disk instead of EBS
 
