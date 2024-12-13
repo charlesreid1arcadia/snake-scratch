@@ -1,14 +1,25 @@
+# Recipe for Trove Analysis
+
+This recipe is organized into three parts:
+
+* Setting up the machine
+* Running the steps manually
+* Running the steps with workflow
+
 # Recipe for Trove Analysis: Setting Up The Machine
 
 ## AWS Permissions
 
-The Arcadia AWS administrator will need to attach the following policies to the IAM user you are using:
+Before you can create an EC2 to run the steps, the Arcadia AWS administrator will need to attach the following policies to your IAM user:
+
 * EC2FullAccess
+* S3FullAccess
 * IAMReadOnlyAccess
 
 ## EC2 Preparation
 
-Use the AWS console to create an EC2 instance. Use the following:
+Use the AWS console to create an EC2 instance. Use the following settings:
+
 * Amazon Linux AMI
 * 30 GB EBS drive
 * Pick "large" instance size
@@ -55,6 +66,12 @@ conda activate
 
 Alternatively, add the first command to your .bashrc, then you can activate the conda environment by just typing `conda activate`.
 
+A third way to activate the environment is to run this command at the command line:
+
+```
+source ~/conda/bin/activate
+```
+
 ## Sourmash Installation
 
 Once you have actiavted the conda environment, add the bioconda channel, which will allow you to install sourmash:
@@ -65,7 +82,18 @@ conda config --env --add channels bioconda
 conda install sourmash
 ```
 
-# Recipe for Trove Analysis: Manual Steps
+## Snakemake Installation
+
+To install Snakemake for running the workflow, use conda and bioconda:
+
+```
+# This channel should already be present, as per sourmash installation
+conda config --env --add channels bioconda
+
+conda install snakemake
+```
+
+# Recipe for Trove Analysis: Running Steps Manually
 
 ## Creating Sourmash Sketches
 
@@ -145,8 +173,29 @@ saving comparison matrix to: cmp.dist
 
 The distance between signatures will depend on the parameters used when generating the sketch. The k parameter has a big effect, but so do other parameters such as scaled (how the bag of k-mers is subsampled) or weighting (by abundance or not).
 
-# Recipe for Trove Analysis: Automated Steps
+# Recipe for Trove Analysis: Running Steps With Workflows
 
 ## Snakemake Workflow
 
-To automate the steps described above, we have a simple workflow in this repository
+To automate the steps described above, we have a "simple" workflow in this repository that consists of a download step and a sourmash sketch step. This workflow is intended to automatically download many data files, generate sourmash sketches from them, save the sketches, and clean up.
+
+The workflow file is called `workflow_sourmash.Snakefile`. It takes a YAML configuration file that specifies the name of the S3 bucket, the objects in the bucket that should be downloaded, and parameters for the sourmash sketch command (currently just k).
+
+Run the snakemake command and provide it the config file, the workflow file, and the workflow rule to run (`all`):
+
+```
+snakemake --configfile config_tabulasapiens.yaml -s workflow_sourmash.Snakefile all
+```
+
+# TODO
+
+Tasks still outstanding:
+
+* Plan which files should be downloaded (multiple rounds: preliminary, full)
+* Copy signatures to a designatured signatures bucket/folder
+* Clean up downloaded files
+* Re-run timing of different steps using local `/tmp` disk instead of EBS
+
+
+
+
